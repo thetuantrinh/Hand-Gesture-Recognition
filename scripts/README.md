@@ -5,7 +5,8 @@ Real-time application
 ## Description
 
 Application of Hand Gesture Recognition to Control Universal Robots (UR3)
-![](https://drive.google.com/file/d/123tEgcBX-lTC2jh5HfkZ2sWziaGvC7AN/view?usp=drive_link)
+![](https://drive.google.com/file/d/123tEgcBX-lTC2jh5HfkZ2sWziaGvC7AN/view?usp=sharing)
+
 
 ## License
 Distributed under the MIT License. See `LICENSE` for more information.
