@@ -25,5 +25,5 @@ To use this project, follow these steps:
 ```
 python3 main_control.py
 ```
-2. We also provided a model in the model folder.
+2. We also provided a model in the models folder.
 
