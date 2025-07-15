@@ -1,4 +1,6 @@
 tensorflow==2.13.0
+keras-complex
+scikit-learn
 PyQt5==5.15.11
 pyqtgraph==0.13.7
 sockets==1.0.0
