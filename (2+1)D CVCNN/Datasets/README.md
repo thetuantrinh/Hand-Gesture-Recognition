@@ -3,7 +3,7 @@
 Datasets (Available if required). Corresponding Email: [huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn)
 
 ```bash
-├── Clean Dataset
+├── Train Dataset
 │   ├── Person_1
 │   │   ├── Push – down
 │   │   │   ├── data_1.npy
@@ -25,7 +25,10 @@ Datasets (Available if required). Corresponding Email: [huy.leminh@phenikaa-uni.
 │   ├── Person_6
 │   ├── Person_7
 │   └── Person_8
-├── Noise Dataset
+├── Clean Validation Dataset
+│   ├── Person_9
+│   └── Person_10
+├── Noise Validation Dataset
 │   ├── Person_9
 │   └── Person_10
 ```
