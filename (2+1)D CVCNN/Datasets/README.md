@@ -28,9 +28,9 @@ Datasets (Available if required). Corresponding Email: [huy.leminh@phenikaa-uni.
 ├── Clean Validation Dataset
 │   ├── Person_9
 │   └── Person_10
-├── Noise Validation Dataset
-│   ├── Person_9
-│   └── Person_10
+└── Noise Validation Dataset
+    ├── Person_9
+    └── Person_10
 ```
 
 * The dataset contains 10 human hand gesture types from more than 10 volunteers.
