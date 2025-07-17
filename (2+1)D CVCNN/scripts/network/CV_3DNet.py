@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun 10 10:43:23 2024
+Created on Mon Jun 20 20:06:01 2025
 
-@author: tuan.tt19010226
+@author: tuan.trinhthe
 """
 #%%
 import complexnn
