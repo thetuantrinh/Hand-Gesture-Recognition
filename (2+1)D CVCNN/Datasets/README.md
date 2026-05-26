@@ -1,4 +1,4 @@
-# Datasets for Manuscript titled: End-to-End FMCW Radar Gesture Recognition via Lightweight Complex-Valued (2+1)D Convolutional Network
+# Datasets for Manuscript titled: Complex-Valued (2+1)D Convolutional Neural Networks for Real-Time Hand Gesture Recognition on Edge Devices with FMCW Radar
 
 Datasets (Available if required). Corresponding Email: [huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn)
 
