@@ -108,25 +108,28 @@ The system classifies 10 dynamic gesture modes. In autonomous robotic mode (`mai
 
 ```text
 Hand-Gesture-Recognition/
+├── main.py                        # Root-level entry point with CLI options (--model)
 ├── (2+1)D CVCNN/                  # Git Submodule: Complex-Valued (2+1)D CVCNN model
 ├── Uncertainty-Aware/             # Main publication codebase & real-time control system
 │   ├── Datasets/
 │   │   └── README.md              # Dataset specifications & acquisition protocols
 │   └── scripts/
 │       ├── main_control.py        # Central PyQt5 application (Radar + Deep Learning + UR3)
-│       ├── requirements.txt       # Python package dependencies
+│       ├── requirements.txt       # Categorized Python dependencies
 │       ├── LICENSE                # MIT License
 │       ├── models/                # Pretrained uncertainty-aware weights
 │       │   ├── model_1.h5
 │       │   └── model_2.h5
 │       └── src/
-│           ├── DSP/               # Range-Doppler & Micro-Doppler FFT transforms
-│           ├── radar/             # mmWave radar parameters & DCA1000 socket client
+│           ├── config.py          # Centralized typed configuration (Radar, Robot, UI)
+│           ├── DSP/               # RadarDSP: Range-Doppler & Micro-Doppler FFT transforms
+│           ├── radar/             # DCA1000Client: mmWave radar parameters & DCA1000 UDP client
 │           ├── UI/                # Graphical user interface definitions & icons
-│           ├── UR/                # Universal Robots Ethernet client & motion driver
-│           ├── use_case/          # Inference pipeline & UR3 autonomous control logic
-│           ├── thread_fn/         # QThread workers for concurrent capture & inference
-│           └── utils/             # Visualization, confusion matrix & metrics tools
+│           ├── UR/                # UR3GestureInterface: Universal Robots client & motion driver
+│           ├── use_case/          # GesturePredictor, AutoController & SafetySupervisor
+│           ├── thread_fn/         # Thread workers for concurrent capture & inference
+│           └── utils/             # MicroDopplerPlotter, colormaps & metrics tools
+├── .gitignore                     # Standard Python exclusion rules
 ├── .gitmodules                    # Submodule mapping
 └── README.md                      # Primary project documentation
 ```
@@ -158,8 +161,7 @@ conda create -n radar_hgr python=3.9 -y
 conda activate radar_hgr
 
 # Install dependencies
-cd Uncertainty-Aware/scripts
-pip install -r requirements.txt
+pip install -r Uncertainty-Aware/scripts/requirements.txt
 ```
 
 ### 3. Run Real-Time Controller & GUI
@@ -168,11 +170,13 @@ Ensure your host machine is connected to:
 - The **DCA1000EVM** card via Ethernet (Default IP: `192.168.33.30`).
 - The **UR3 Controller** or **URSim** host (via TCP/IP).
 
-Launch the application:
+Launch directly from the repository root:
 
 ```bash
-python3 main_control.py
+python3 main.py
 ```
+
+*(Alternatively, run from `Uncertainty-Aware/scripts/`: `python3 main_control.py`)*.
 
 Inside the GUI:
 1. Initialize the radar stream to view live range-Doppler feature maps.
