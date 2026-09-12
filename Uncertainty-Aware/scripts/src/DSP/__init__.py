@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct 19 15:01:57 2024
+"""Digital Signal Processing (DSP) package for FMCW Radar."""
 
-@author: tuant
-"""
+from .DSP import RadarDSP, _FFT_
 
+__all__ = ["RadarDSP", "_FFT_"]

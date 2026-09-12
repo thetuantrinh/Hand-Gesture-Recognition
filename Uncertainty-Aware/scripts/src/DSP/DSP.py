@@ -1,154 +1,174 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 16 15:42:17 2022
+"""Radar Digital Signal Processing (DSP) Module.
 
-@author: tuant
+Provides Range FFT, Doppler FFT, Moving Target Indication (MTI) clutter removal,
+and IQ complex sample reconstruction for FMCW radar systems.
 """
+
+from typing import Optional, Union
 import numpy as np
-from numpy.fft import fftshift, fft
-#%%
-class _FFT_:
-    """ Performed Discrete Fast Fourier Transform
+from numpy.fft import fft, fftshift
+
+
+class RadarDSP:
+    """Digital Signal Processor for FMCW Radar data frames.
+
+    Performs fast-time (range) and slow-time (Doppler) discrete Fourier transforms,
+    windowing, and static background clutter rejection.
+
+    Parameters
+    ----------
+    Nc : int
+        Number of chirps per frame (slow-time dimension).
+    Ns : int
+        Number of ADC samples per chirp (fast-time dimension).
     """
-    def __init__(
-            self,
-            Nc: int,    ### No. of Chirp Loops
-            Ns: int     ### Number ADC samples
-            ):           
-        self.adc_bit = 16
-        self.Ns = Ns
-        self.Nc = Nc
-        self.Nt = 3                          ## Number of transmit antennas
-        self.Nr = 4                          ## Number of received antennas
-        self.vir_an = self.Nt * self.Nr 
-        self.num_angle_bins = Nc
-        self.win1D_Ns = np.blackman(self.Ns) ## Recommend using Blackman window
-        self.win1D_Nc = np.hanning(self.Nc)  ## Recommend using Hanning window
-        
-#%% RANGE PROFILE
-    def fft_1D(
-            self,
-            adc_data
-            ):
-        """
-        Perform 1D FFT on complex-format ADC data.
-        Args:
-            adc_data (ndarray): [Nr, Nc, Ns] Format raw data in frame.
-        Returns:
-            [Nr, Nc, Ns] (ndarray): Range bin data in dB
-        """        
-        windowing2D = np.multiply(adc_data, self.win1D_Ns)
-        out_fft1D   = fft(windowing2D, axis = 2)
-        # fft_shift = np.abs(fftshift(out_fft1D, axes=(2,)))
-        # out_dB = 20*np.log10(fft_shift)
-        
-        return out_fft1D
-    
-#%% DOPPLER FFT RANGE-VELOCITY PROFILE
-    def fft_2D(
-            self,
-            adc_data,
-            win_1D_fuc = True,
-            win_2D_fuc = True
-            ):
-        """
-        Perform 2D FFT on complex-format 1D FFT .
+
+    def __init__(self, Nc: int = 128, Ns: int = 64) -> None:
+        self.adc_bit: int = 16
+        self.Ns: int = Ns
+        self.Nc: int = Nc
+        self.Nt: int = 3  # Number of transmit antennas
+        self.Nr: int = 4  # Number of receive antennas
+        self.virtual_antennas: int = self.Nt * self.Nr
+        self.num_angle_bins: int = Nc
+
+        # Pre-computed windowing functions
+        self.win_range: np.ndarray = np.blackman(self.Ns).astype(np.float32)
+        self.win_doppler: np.ndarray = np.hanning(self.Nc).astype(np.float32)
+
+    def fft_1d(self, adc_data: np.ndarray) -> np.ndarray:
+        """Perform 1D Range FFT across fast-time ADC samples.
 
         Parameters
         ----------
-        adc_data : (ndarray): [Nr, Nc, Ns] Format raw data in frame.
-        win_1D_fuc : bool, The default is False. The window function samples
-        win_2D_fuc : bool, The default is False. The window function chirps
+        adc_data : np.ndarray
+            Input complex ADC matrix of shape [Nr, Nc, Ns].
 
         Returns
         -------
-        TYPE
-            output FFT-2D [Nr, IQ, Ns, Nc]
-
+        np.ndarray
+            1D Range FFT spectrum of shape [Nr, Nc, Ns].
         """
-        #% Fast-time Processing (across samples)
-        windowing1D = np.multiply(adc_data, self.win1D_Ns)
-        if win_1D_fuc:
-            out_fft1D   = fft(windowing1D, axis = 2)
-        else:
-            out_fft1D   = fft(adc_data, axis = 2)
-        #% Remove zero-Doppler (back-ground data)
-        out_fft1D = self.MTI(out_fft1D)    
-        #% Slow-time Processing (across chirps)
-        windowing2D = np.multiply(out_fft1D.transpose(0, 2, 1),
-                                  self.win1D_Nc)
-        if win_2D_fuc:
-            out_fft2D   = fft(windowing2D, axis = 2)
-        else:
-            out_fft2D   = fft(out_fft1D, axis = 1).transpose(0, 2, 1)
-        fft_shift = fftshift(out_fft2D) + 1e-9
+        windowed = np.multiply(adc_data, self.win_range)
+        return fft(windowed, axis=2)
 
-        return np.array([[fft_shift[0].real, fft_shift[0].imag],
-                         [fft_shift[1].real, fft_shift[1].imag],
-                         [fft_shift[2].real, fft_shift[2].imag],
-                         [fft_shift[3].real, fft_shift[3].imag]],
-                        dtype = np.float32)
-    
-#%% Static clutter removal
-    def MTI(
-            self,
-            data
-            ):
-        """
-        Once the active chirp time of the frame is complete, the interframe
-        processing can begin, starting with static clutter removal.
-        1D FFT data is averaged across all chirps for a single Virtual Rx antenna.
-        This average is then subtracted from each chirp from the Virtual Rx antenna.
-        This cleanly removes the static information from the signal,
-        leaving only the signals returned from moving objects.        
+    # Legacy alias
+    fft_1D = fft_1d
+
+    def mti_filter(self, range_data: np.ndarray) -> np.ndarray:
+        """Moving Target Indication (MTI) filter for static clutter removal.
+
+        Subtracts the average across all chirps for each antenna,
+        removing stationary reflections (walls, desks) and isolating moving targets.
 
         Parameters
         ----------
-        data : (complex64) FFT - 1D output.
+        range_data : np.ndarray
+            Range FFT output of shape [Nr, Nc, Ns].
 
         Returns
         -------
-        None.
+        np.ndarray
+            Clutter-removed range profile with identical shape.
         """
-        Xnr = (1/(self.Nc)) * np.sum(data, axis = 1, keepdims=True)
-        Xncr= data - Xnr
-        
-        return Xncr
-#%%
-    def pre_processing(
-            self, 
-            adcData,
-            fft = False
-            ):
-        adcData = np.reshape(
-            adcData,
-            (8, self.Nc * self.Ns),
-            order = 'F'
-            )
-        adcData = adcData[[0, 1, 2, 3], :] + \
-             1j * adcData[[4, 5, 6, 7], :]
-        adcData = np.array(
+        avg_chirp = (1.0 / self.Nc) * np.sum(range_data, axis=1, keepdims=True)
+        return range_data - avg_chirp
+
+    # Legacy alias
+    MTI = mti_filter
+
+    def fft_2d(
+        self,
+        adc_data: np.ndarray,
+        apply_range_window: bool = True,
+        apply_doppler_window: bool = True,
+    ) -> np.ndarray:
+        """Compute 2D Range-Doppler FFT matrix from raw frame.
+
+        Parameters
+        ----------
+        adc_data : np.ndarray
+            Complex ADC matrix of shape [Nr, Nc, Ns].
+        apply_range_window : bool, optional
+            Whether to apply Blackman window on fast-time samples, by default True.
+        apply_doppler_window : bool, optional
+            Whether to apply Hanning window on slow-time chirps, by default True.
+
+        Returns
+        -------
+        np.ndarray
+            Range-Doppler matrix formatted as [Nr, 2 (Real/Imag), Ns, Nc].
+        """
+        # Fast-time (Range) processing
+        if apply_range_window:
+            windowed_1d = np.multiply(adc_data, self.win_range)
+            out_fft1d = fft(windowed_1d, axis=2)
+        else:
+            out_fft1d = fft(adc_data, axis=2)
+
+        # Static clutter removal
+        filtered_1d = self.mti_filter(out_fft1d)
+
+        # Slow-time (Doppler) processing
+        transposed = filtered_1d.transpose(0, 2, 1)  # [Nr, Ns, Nc]
+        if apply_doppler_window:
+            windowed_2d = np.multiply(transposed, self.win_doppler)
+            out_fft2d = fft(windowed_2d, axis=2)
+        else:
+            out_fft2d = fft(filtered_1d, axis=1).transpose(0, 2, 1)
+
+        fft_shifted = fftshift(out_fft2d) + 1e-9
+
+        # Separate real and imaginary components for CNN consumption
+        return np.array(
             [
-                 np.reshape(
-                 adcData[0], 
-                 (self.Nc, self.Ns)
-                 ),
-             np.reshape(
-                 adcData[1],
-                 (self.Nc, self.Ns)
-                 ),
-             np.reshape(
-                 adcData[2],
-                 (self.Nc, self.Ns)
-                 ),
-             np.reshape(
-                 adcData[3],
-                 (self.Nc, self.Ns)
-                 )
-             ]
-            )
-        
+                [fft_shifted[0].real, fft_shifted[0].imag],
+                [fft_shifted[1].real, fft_shifted[1].imag],
+                [fft_shifted[2].real, fft_shifted[2].imag],
+                [fft_shifted[3].real, fft_shifted[3].imag],
+            ],
+            dtype=np.float32,
+        )
+
+    # Legacy alias
+    fft_2D = fft_2d
+
+    def pre_processing(
+        self,
+        adc_data: np.ndarray,
+        fft: bool = False,
+    ) -> np.ndarray:
+        """Reshape interleaved raw ADC stream into multi-channel complex format.
+
+        Parameters
+        ----------
+        adc_data : np.ndarray
+            Raw ADC linear sample buffer.
+        fft : bool, optional
+            If True, immediately computes 2D Range-Doppler FFT, by default False.
+
+        Returns
+        -------
+        np.ndarray
+            Complex matrix [Nr, Nc, Ns] or 2D FFT tensor [Nr, 2, Ns, Nc].
+        """
+        reshaped = np.reshape(adc_data, (8, self.Nc * self.Ns), order="F")
+        complex_iq = reshaped[:4, :] + 1j * reshaped[4:, :]
+
+        formatted = np.array(
+            [
+                np.reshape(complex_iq[0], (self.Nc, self.Ns)),
+                np.reshape(complex_iq[1], (self.Nc, self.Ns)),
+                np.reshape(complex_iq[2], (self.Nc, self.Ns)),
+                np.reshape(complex_iq[3], (self.Nc, self.Ns)),
+            ]
+        )
+
         if fft:
-            return self.fft_2D(adcData)
-        
-        return adcData         
+            return self.fft_2d(formatted)
+
+        return formatted
+
+
+# Backwards compatibility alias
+_FFT_ = RadarDSP

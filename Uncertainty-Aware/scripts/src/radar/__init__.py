@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct 19 15:01:57 2024
+"""Radar hardware and network interface package."""
 
-@author: tuant
-"""
+from .DCA1000EVM_backend import DCA1000Client, DCA1000, CMD
 
+__all__ = ["DCA1000Client", "DCA1000", "CMD"]

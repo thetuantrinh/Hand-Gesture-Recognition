@@ -1,97 +1,94 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul 13 16:12:06 2023
+"""Universal Robots UR3 High-Level Gesture Actuation Interface.
 
-@author: tuant
+Initializes RTDE / Real-time client connection to physical UR3 controller or URSim,
+executes homing sequence, and streams current joint / TCP pose vectors.
 """
+
 import time
-from src import UR
-import numpy as np
 import logging
-logging.basicConfig(
-    format="%(asctime)s-%(levelname)s-%(message)s",
-    level=logging.INFO
-    )
+from typing import List, Optional, Union
+import numpy as np
 
-#%%
-class GES_POS(
-        object
-        ):
-    def __init__(self):
-        # self.ROBOT_IP = '192.168.64.128' # UR3 local IP Simulation 
-        self.ROBOT_IP = '169.254.200.239'  # UR3 local IP
+from src import UR
+from ..config import NetworkConfig, RobotConfig
 
-        logging.info("Initializing Arm Robot !")
-        self.robotModel = UR.robotModel.RobotModel()
+logger = logging.getLogger(__name__)
+
+
+class UR3GestureInterface:
+    """High-level interface for UR3 manipulator control and state acquisition.
+
+    Parameters
+    ----------
+    robot_ip : Optional[str], optional
+        Target UR3 controller IP address. Defaults to NetworkConfig.ur3_ip.
+    """
+
+    def __init__(self, robot_ip: Optional[str] = None) -> None:
+        self.net_cfg = NetworkConfig()
+        self.robot_cfg = RobotConfig()
+        self.robot_ip: str = robot_ip or self.net_cfg.ur3_ip
+
+        logger.info(f"Connecting to Universal Robots UR3 at {self.robot_ip}...")
+        self.robot_model = UR.robotModel.RobotModel()
         self.robot = UR.urScriptExt.UrScriptExt(
-            host=self.ROBOT_IP,
-            robotModel=self.robotModel
-            )
+            host=self.robot_ip,
+            robotModel=self.robot_model,
+        )
         self.robot.reset_error()
-        logging.info("Initialized !")
-        time.sleep(2)
-        
-        self.acceletion = 0.9  # Robot acceleration value
-        self.velocity = 1.0    # Robot speed value
-        
-        self.start_pos = [55.84, #   Base
-                          -73.91,  #   Shoulder
-                          139.98,  #   Elbow
-                          -195.87,  #   Wrist 1
-                          -66.93,   #   Wrist 2
-                          -203.18]    #   Wrist 3
-        self.robot.set_tools(STATE = "RELEASE")
-        
+        logger.info("UR3 connected and cleared of errors.")
+        time.sleep(1.0)
+
+        self.acceleration: float = self.robot_cfg.acceleration
+        self.velocity: float = self.robot_cfg.velocity
+        self.start_pos: List[float] = list(self.robot_cfg.default_home_joints)
+
+        # Initialize tool state and home position
+        self.robot.set_tools(STATE="RELEASE")
         self.robot.movej(
-            q= np.radians(self.start_pos),
-            a= self.acceletion,
-            v= self.velocity
-            )
-        
-        # starts the realtime control loop on the Universal-Robot Controller
-        self.robot.init_realtime_control()  
-        time.sleep(2) # just a short wait to make sure everything is initialised
-#%%
+            q=np.radians(self.start_pos),
+            a=self.acceleration,
+            v=self.velocity,
+        )
+
+        # Start real-time control loop
+        self.robot.init_realtime_control()
+        time.sleep(1.5)
+
     def read_ur_data(
-            self,
-            fps = 20,
-            read_data = 'TCP Pos'
-            ):
-        """
+        self,
+        fps: int = 20,
+        read_data: str = "TCP Pos",
+    ) -> List[float]:
+        """Read actual Cartesian Tool Center Point (TCP) pose or joint angular vector.
+
         Parameters
         ----------
-        fps : (int) Speed read data. The default is 20 fps.
-        read_data : The current actual TCP vector : ([X, Y, Z, Rx, Ry, Rz]).
-        X, Y, Z in meter, Rx, Ry, Rz in rad. The default is 'TCP Pos'. 
-        
-        If 'joint Pos':    
-        The current actual joint angular position vector in rad : 
-        [Base, Shoulder, Elbow, Wrist1, Wrist2, Wrist3]
+        fps : int, optional
+            Data polling rate limit in frames per second, default 20.
+        read_data : str, optional
+            Either 'TCP Pos' ([X, Y, Z, Rx, Ry, Rz]) or
+            'joint Pos' ([Base, Shoulder, Elbow, W1, W2, W3]), default 'TCP Pos'.
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
+        List[float]
+            Telemetry pose vector.
+        """
+        if read_data == "TCP Pos":
+            return list(self.robot.get_actual_tcp_pose())
+        elif read_data == "joint Pos":
+            return list(self.robot.get_actual_joint_positions())
+        return []
 
-        """
-        if read_data == 'TCP Pos':    
-            self.data = self.robot.get_actual_tcp_pose()
-        elif read_data == 'joint Pos':
-            self.data = self.robot.get_actual_joint_positions()
-        # time.sleep((1/fps))
-        
-        return self.data
-#%%
-    def close(
-            self
-            ):
-        """
-        Remember to always close the robot connection,
-        otherwise it is not possible to reconnect
-        Returns
-        -------
-        None.
-        Closing robot connection
+    def close(self) -> None:
+        """Safely terminate robot connection and free socket."""
+        logger.info("Closing UR3 controller connection...")
+        try:
+            self.robot.close()
+        except Exception as e:
+            logger.error(f"Error closing UR3 connection: {e}")
 
-        """
-        self.robot.close()
+
+# Backwards compatibility alias
+GES_POS = UR3GestureInterface
