@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radar-hgr"
+version = "1.0.0"
+description = "Uncertainty-aware FMCW radar hand gesture recognition for Universal Robots UR3 control"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+keywords = ["fmcw-radar", "hand-gesture-recognition", "human-robot-interaction", "mmwave"]
+
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.23,<2.0",
+    "scipy>=1.10",
+    "PyQt5>=5.15.6",
+    "pyqtgraph>=0.13",
+    "six>=1.16",
+]
+
+[project.optional-dependencies]
+# TensorFlow is optional: the DSP, protocol and control layers run without it,
+# and the GUI degrades to acquisition and manual control when it is absent.
+inference = ["tensorflow>=2.12,<2.16"]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+radar-hgr = "radar_hgr.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+radar_hgr = [
+    "ui/assets/*.png",
+    "ui/assets/*.jpg",
+    "ui/assets/icon/*",
+    "ui/designer/*.ui",
+    "radar/radar_configure/*.xml",
+    "robot/sdk/*.xml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--doctest-modules --strict-markers"
+# The vendored UR SDK is third-party and opens sockets on import paths we do
+# not control; it is excluded from doctest collection.
+norecursedirs = ["src/radar_hgr/robot/sdk"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+src = ["src"]
+extend-exclude = ["src/radar_hgr/robot/sdk", "src/radar_hgr/ui/layout"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "D", "UP", "B", "SIM"]
+ignore = [
+    "N803",  # Qt's `MainWindow` parameter name is the Designer convention
+    "N806",
+    "D105",  # magic methods are self-describing
+    "D107",  # numpydoc documents constructor parameters on the class
+]
+
+[tool.ruff.lint.pydocstyle]
+# Parameters are documented in class docstrings, not on __init__.
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D100", "D101", "D102", "D103"]

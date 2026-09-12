@@ -1,0 +1,166 @@
+"""UR3 network configuration panel (IP address, RTDE port, session controls)."""
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class RobotConfigPanel:
+    """UR3 network configuration panel (IP address, RTDE port, session controls).
+
+    Mixin contributing this panel's widgets to :class:`~radar_hgr.ui.layout.main_window.Ui_MainWindow`.
+    """
+
+    def build_robot_panel(self, MainWindow):
+        """Instantiate and position this panel's widgets."""
+        self.UR3_SYS_CFG = QtWidgets.QGroupBox(self.control_pannel)
+        self.UR3_SYS_CFG.setGeometry(QtCore.QRect(20, 370, 461, 431))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        self.UR3_SYS_CFG.setFont(font)
+        self.UR3_SYS_CFG.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.UR3_SYS_CFG.setObjectName("UR3_SYS_CFG")
+
+        self.ctrl_ur3 = QtWidgets.QCheckBox(self.UR3_SYS_CFG)
+        self.ctrl_ur3.setGeometry(QtCore.QRect(90, 395, 275, 31))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        self.ctrl_ur3.setFont(font)
+        self.ctrl_ur3.setObjectName("ctrl_ur3")
+
+        self.btn_stop_UR3 = QtWidgets.QPushButton(self.UR3_SYS_CFG)
+        self.btn_stop_UR3.setGeometry(QtCore.QRect(270, 115, 151, 41))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setKerning(False)
+        self.btn_stop_UR3.setFont(font)
+        self.btn_stop_UR3.setStyleSheet("background-color: qlineargradient(spread:reflect, x1:0.471409, y1:0.102, x2:0.972, y2:0.0965909, stop:0.369318 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.btn_stop_UR3.setObjectName("btn_stop_UR3")
+
+        self.btn_start_UR3 = QtWidgets.QPushButton(self.UR3_SYS_CFG)
+        self.btn_start_UR3.setGeometry(QtCore.QRect(60, 115, 141, 41))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setKerning(False)
+        self.btn_start_UR3.setFont(font)
+        self.btn_start_UR3.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 253, 255, 255), stop:0.522727 rgba(255, 255, 0, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 253, 255, 255), stop:0.522727 rgba(51, 255, 0, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.btn_start_UR3.setObjectName("btn_start_UR3")
+
+        self.btn_reset_UR3 = QtWidgets.QPushButton(self.UR3_SYS_CFG)
+        self.btn_reset_UR3.setGeometry(QtCore.QRect(320, 70, 121, 31))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setKerning(False)
+        self.btn_reset_UR3.setFont(font)
+        self.btn_reset_UR3.setStyleSheet("background-color: qlineargradient(spread:reflect, x1:0.489, y1:1, x2:1, y2:1, stop:0 rgba(255, 255, 0, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.btn_reset_UR3.setObjectName("btn_reset_UR3")
+
+        self.label_UR3_IP_ADD = QtWidgets.QLabel(self.UR3_SYS_CFG)
+        self.label_UR3_IP_ADD.setGeometry(QtCore.QRect(10, 30, 161, 31))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        font.setBold(False)
+        self.label_UR3_IP_ADD.setFont(font)
+        self.label_UR3_IP_ADD.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.label_UR3_IP_ADD.setObjectName("label_UR3_IP_ADD")
+
+        self.frame_4 = QtWidgets.QFrame(self.UR3_SYS_CFG)
+        self.frame_4.setGeometry(QtCore.QRect(170, 25, 281, 41))
+        self.frame_4.setObjectName("frame_4")
+
+        self.UR3_IP_ADD_0 = QtWidgets.QLineEdit(self.frame_4)
+        self.UR3_IP_ADD_0.setGeometry(QtCore.QRect(10, 10, 51, 21))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(7)
+        self.UR3_IP_ADD_0.setFont(font)
+        self.UR3_IP_ADD_0.setAlignment(QtCore.Qt.AlignCenter)
+        self.UR3_IP_ADD_0.setObjectName("UR3_IP_ADD_0")
+
+        self.label_9 = QtWidgets.QLabel(self.frame_4)
+        self.label_9.setGeometry(QtCore.QRect(68, 18, 16, 16))
+        self.label_9.setObjectName("label_9")
+
+        self.UR3_IP_ADD_1 = QtWidgets.QLineEdit(self.frame_4)
+        self.UR3_IP_ADD_1.setGeometry(QtCore.QRect(80, 10, 51, 21))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(7)
+        self.UR3_IP_ADD_1.setFont(font)
+        self.UR3_IP_ADD_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.UR3_IP_ADD_1.setObjectName("UR3_IP_ADD_1")
+
+        self.label_10 = QtWidgets.QLabel(self.frame_4)
+        self.label_10.setGeometry(QtCore.QRect(138, 18, 16, 16))
+        self.label_10.setObjectName("label_10")
+
+        self.UR3_IP_ADD_2 = QtWidgets.QLineEdit(self.frame_4)
+        self.UR3_IP_ADD_2.setGeometry(QtCore.QRect(150, 10, 51, 21))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(7)
+        self.UR3_IP_ADD_2.setFont(font)
+        self.UR3_IP_ADD_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.UR3_IP_ADD_2.setObjectName("UR3_IP_ADD_2")
+
+        self.label_11 = QtWidgets.QLabel(self.frame_4)
+        self.label_11.setGeometry(QtCore.QRect(208, 18, 16, 16))
+        self.label_11.setObjectName("label_11")
+
+        self.UR3_IP_ADD_3 = QtWidgets.QLineEdit(self.frame_4)
+        self.UR3_IP_ADD_3.setGeometry(QtCore.QRect(220, 10, 51, 21))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(7)
+        self.UR3_IP_ADD_3.setFont(font)
+        self.UR3_IP_ADD_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.UR3_IP_ADD_3.setObjectName("UR3_IP_ADD_3")
+
+        self.label_RTDE_PORT = QtWidgets.QLabel(self.UR3_SYS_CFG)
+        self.label_RTDE_PORT.setGeometry(QtCore.QRect(10, 70, 161, 31))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(16)
+        font.setBold(False)
+        self.label_RTDE_PORT.setFont(font)
+        self.label_RTDE_PORT.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.label_RTDE_PORT.setObjectName("label_RTDE_PORT")
+
+        self.RTDE_PORT = QtWidgets.QSpinBox(self.UR3_SYS_CFG)
+        self.RTDE_PORT.setGeometry(QtCore.QRect(180, 70, 121, 31))
+        font = QtGui.QFont()
+        font.setFamily("System")
+        font.setPointSize(17)
+        font.setBold(False)
+        self.RTDE_PORT.setFont(font)
+        self.RTDE_PORT.setAlignment(QtCore.Qt.AlignCenter)
+        self.RTDE_PORT.setMinimum(1)
+        self.RTDE_PORT.setMaximum(64000)
+        self.RTDE_PORT.setProperty("value", 30004)
+        self.RTDE_PORT.setDisplayIntegerBase(10)
+        self.RTDE_PORT.setObjectName("RTDE_PORT")
+
+    def retranslate_robot_panel(self, MainWindow, _translate):
+        """Apply display strings for this panel's widgets."""
+        self.UR3_SYS_CFG.setTitle(_translate("MainWindow", "UR3 system configuration"))
+        self.btn_stop_UR3.setText(_translate("MainWindow", "STOP UR3"))
+        self.btn_start_UR3.setText(_translate("MainWindow", "START UR3"))
+        self.btn_reset_UR3.setText(_translate("MainWindow", "RESET"))
+        self.label_UR3_IP_ADD.setText(_translate("MainWindow", "UR3 IP Address:"))
+        self.UR3_IP_ADD_0.setText(_translate("MainWindow", "169"))
+        self.label_9.setText(_translate("MainWindow", "."))
+        self.UR3_IP_ADD_1.setText(_translate("MainWindow", "254"))
+        self.label_10.setText(_translate("MainWindow", "."))
+        self.UR3_IP_ADD_2.setText(_translate("MainWindow", "200"))
+        self.label_11.setText(_translate("MainWindow", "."))
+        self.UR3_IP_ADD_3.setText(_translate("MainWindow", "239"))
+        self.label_RTDE_PORT.setText(_translate("MainWindow", "RTDE port:"))
+        self.ctrl_ur3.setText(_translate("MainWindow", "Control UR3 by Hand Gesture?"))

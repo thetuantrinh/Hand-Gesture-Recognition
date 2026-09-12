@@ -4,7 +4,7 @@
 
 [![IEEE Sensors Journal](https://img.shields.io/badge/IEEE-Sensors_Journal_2025-00629B?style=for-the-badge&logo=ieee&logoColor=white)](https://ieeexplore.ieee.org/document/11023089/)
 [![DOI](https://img.shields.io/badge/DOI-10.1109%2FJSEN.2025.3573743-0288D1?style=for-the-badge)](https://doi.org/10.1109/JSEN.2025.3573743)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](Uncertainty-Aware/LICENSE)
 
 [![Python](https://img.shields.io/badge/Python-3.8_|_3.9_|_3.10-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.13.0-FF6F00?style=flat-square&logo=tensorflow&logoColor=white)](https://tensorflow.org/)
@@ -58,7 +58,7 @@ This repository provides the complete, end-to-end framework introduced in our pa
 
 ## 🤖 Gesture Vocabulary & Robot Action Mapping
 
-The system classifies 10 dynamic gesture modes. In autonomous robotic mode (`main_control.py`), recognized gestures are translated into deterministic Cartesian / tool poses:
+The system classifies 10 dynamic gesture modes. In autonomous robotic mode, recognized gestures are translated into deterministic Cartesian / tool poses. The mapping is declared as data in [`robot/actions.py`](Uncertainty-Aware/src/radar_hgr/robot/actions.py):
 
 | # | Gesture Class | Motion Pattern | UR3 Robotic Execution | Safety / Interlock Policy |
 | :-: | :--- | :--- | :--- | :--- |
@@ -108,31 +108,36 @@ The system classifies 10 dynamic gesture modes. In autonomous robotic mode (`mai
 
 ```text
 Hand-Gesture-Recognition/
-├── main.py                        # Root-level entry point with CLI options (--model)
-├── (2+1)D CVCNN/                  # Git Submodule: Complex-Valued (2+1)D CVCNN model
-├── Uncertainty-Aware/             # Main publication codebase & real-time control system
-│   ├── Datasets/
-│   │   └── README.md              # Dataset specifications & acquisition protocols
-│   └── scripts/
-│       ├── main_control.py        # Central PyQt5 application (Radar + Deep Learning + UR3)
-│       ├── requirements.txt       # Categorized Python dependencies
-│       ├── LICENSE                # MIT License
-│       ├── models/                # Pretrained uncertainty-aware weights
-│       │   ├── model_1.h5
-│       │   └── model_2.h5
-│       └── src/
-│           ├── config.py          # Centralized typed configuration (Radar, Robot, UI)
-│           ├── DSP/               # RadarDSP: Range-Doppler & Micro-Doppler FFT transforms
-│           ├── radar/             # DCA1000Client: mmWave radar parameters & DCA1000 UDP client
-│           ├── UI/                # Graphical user interface definitions & icons
-│           ├── UR/                # UR3GestureInterface: Universal Robots client & motion driver
-│           ├── use_case/          # GesturePredictor, AutoController & SafetySupervisor
-│           ├── thread_fn/         # Thread workers for concurrent capture & inference
-│           └── utils/             # MicroDopplerPlotter, colormaps & metrics tools
-├── .gitignore                     # Standard Python exclusion rules
-├── .gitmodules                    # Submodule mapping
-└── README.md                      # Primary project documentation
+├── main.py                            # Convenience launcher for a fresh clone (--model, --verbose)
+├── (2+1)D CVCNN/                      # Git submodule: Complex-Valued (2+1)D CVCNN model
+├── Uncertainty-Aware/                 # Real-time application (installable package `radar-hgr`)
+│   ├── pyproject.toml                 # Packaging, dependencies, pytest & ruff configuration
+│   ├── LICENSE                        # MIT License
+│   ├── README.md                      # Application documentation & developer notes
+│   ├── models/                        # Pre-trained uncertainty-aware checkpoints
+│   ├── Datasets/README.md             # Dataset specification & acquisition protocol
+│   ├── tests/                         # Hardware-free unit tests
+│   └── src/radar_hgr/
+│       ├── cli.py                     # Argument parsing & console-script entry point
+│       ├── config/                    # Frozen dataclasses: radar, network, robot, features, paths
+│       ├── dsp/                       # Range-Doppler chain + packet-to-frame reassembly
+│       ├── radar/                     # DCA1000EVM wire protocol & UDP client
+│       ├── inference/                 # Vote smoothing, model loading & gesture predictor
+│       ├── robot/                     # Gesture vocabulary, controllers, safety & vendored UR SDK
+│       ├── workers/                   # Qt threads for acquisition & telemetry
+│       ├── ui/                        # Window layout, presentation views & assets
+│       └── app/                       # Hardware sessions & main-window wiring
+├── .gitignore                         # Standard Python exclusion rules
+├── .gitmodules                        # Submodule mapping
+└── README.md                          # Primary project documentation
 ```
+
+The application is layered with dependencies pointing strictly downwards:
+`config` depends on nothing, the four domain packages (`dsp`, `radar`,
+`inference`, `robot`) depend only on `config`, and `app` is the sole layer aware
+of both the widgets and the hardware. See
+[Uncertainty-Aware/README.md](Uncertainty-Aware/README.md) for the module map
+and maintainer notes.
 
 > 🔗 **Submodule Link:** `(2+1)D CVCNN` is directly linked to the companion repository [Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition](https://github.com/thetuantrinh/Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition).
 
@@ -160,9 +165,13 @@ We recommend Python 3.8–3.10 with a clean conda or virtual environment:
 conda create -n radar_hgr python=3.9 -y
 conda activate radar_hgr
 
-# Install dependencies
-pip install -r Uncertainty-Aware/scripts/requirements.txt
+# Install the application (editable) together with TensorFlow
+pip install -e 'Uncertainty-Aware[inference]'
 ```
+
+TensorFlow is an optional extra: `pip install -e Uncertainty-Aware` alone gives
+radar acquisition, the live micro-Doppler display and manual robot control,
+with gesture classification disabled.
 
 ### 3. Run Real-Time Controller & GUI
 
@@ -170,18 +179,21 @@ Ensure your host machine is connected to:
 - The **DCA1000EVM** card via Ethernet (Default IP: `192.168.33.30`).
 - The **UR3 Controller** or **URSim** host (via TCP/IP).
 
-Launch directly from the repository root:
+Launch with the installed console script, or directly from the repository root:
 
 ```bash
-python3 main.py
+radar-hgr                                  # after pip install
+radar-hgr --model Uncertainty-Aware/models/model_1.h5 --verbose
+
+python3 main.py                            # without installing
 ```
 
-*(Alternatively, run from `Uncertainty-Aware/scripts/`: `python3 main_control.py`)*.
-
 Inside the GUI:
-1. Initialize the radar stream to view live range-Doppler feature maps.
-2. Select an uncertainty-aware checkpoint from `models/` (e.g., `model_1.h5`).
-3. Connect to UR3 or URSim to enable real-time gesture-driven manipulator control.
+1. **START RADAR** to view the live micro-Doppler feature map.
+2. Tick **Predict Hand Gesture**, optionally selecting another checkpoint from
+   `Uncertainty-Aware/models/` with the file browser.
+3. **START UR3** and tick **Control UR3 by Hand Gesture** to close the loop.
+   The jog pad and gripper selector operate independently of the classifier.
 
 ---
 
@@ -218,7 +230,7 @@ If this paper, codebase, pre-trained models, or dataset contribute to your resea
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](Uncertainty-Aware/scripts/LICENSE) file for complete details.
+This project is licensed under the **MIT License** — see the [LICENSE](Uncertainty-Aware/LICENSE) file for complete details.
 
 ---
 

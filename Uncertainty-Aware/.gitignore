@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Testing & tooling
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Runtime output
+ur_log/
+*.log
+UrEvent.log
+UrDataLog.csv
+
+# Datasets are distributed on request; see Datasets/README.md
+Datasets/*.mat
