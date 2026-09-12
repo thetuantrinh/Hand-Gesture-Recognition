@@ -1,180 +1,201 @@
-# Hand Gesture Recognition With Uncertainty Awareness via FMCW Radar Sensing and Deep Learning
+<div align="center">
 
-[![IEEE Sensors Journal](https://img.shields.io/badge/IEEE-Sensors_Journal_2025-00629B.svg)](https://ieeexplore.ieee.org/document/11023089/)
-[![DOI](https://img.shields.io/badge/DOI-10.1109%2FJSEN.2025.3573743-blue.svg)](https://doi.org/10.1109/JSEN.2025.3573743)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-brightgreen.svg)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.13.0-orange.svg)](https://tensorflow.org/)
-[![Hardware](https://img.shields.io/badge/Hardware-TI_AWR1243_%7C_DCA1000_%7C_UR3-lightgrey.svg)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+# Hand Gesture Recognition With Uncertainty Awareness<br>via FMCW Radar Sensing and Deep Learning
 
-Official repository for the article:  
-**"Hand Gesture Recognition With Uncertainty Awareness via FMCW Radar Sensing and Deep Learning"**, published in **IEEE Sensors Journal**, Vol. 25, No. 13, pp. 24517–24524, 2025.  
-DOI: [10.1109/JSEN.2025.3573743](https://doi.org/10.1109/JSEN.2025.3573743)
+[![IEEE Sensors Journal](https://img.shields.io/badge/IEEE-Sensors_Journal_2025-00629B?style=for-the-badge&logo=ieee&logoColor=white)](https://ieeexplore.ieee.org/document/11023089/)
+[![DOI](https://img.shields.io/badge/DOI-10.1109%2FJSEN.2025.3573743-0288D1?style=for-the-badge)](https://doi.org/10.1109/JSEN.2025.3573743)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+
+[![Python](https://img.shields.io/badge/Python-3.8_|_3.9_|_3.10-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.13.0-FF6F00?style=flat-square&logo=tensorflow&logoColor=white)](https://tensorflow.org/)
+[![PyQt5](https://img.shields.io/badge/GUI-PyQt5_|_PyQtGraph-41CD52?style=flat-square&logo=qt&logoColor=white)](https://riverbankcomputing.com/software/pyqt/)
+[![Hardware](https://img.shields.io/badge/Hardware-TI_AWR1243BOOST_|_DCA1000EVM-CC0000?style=flat-square&logo=circuitverse&logoColor=white)](https://www.ti.com/)
+[![Robotics](https://img.shields.io/badge/Robotics-Universal_Robots_UR3-005B94?style=flat-square)](https://www.universal-robots.com/)
+
+<br>
+
+**Official repository for the research paper:**  
+*"Hand Gesture Recognition With Uncertainty Awareness via FMCW Radar Sensing and Deep Learning"*  
+Published in **IEEE Sensors Journal**, Vol. 25, No. 13, pp. 24517–24524, 2025.
+
+[**The Tuan Trinh**](https://github.com/thetuantrinh)$^1$ · [**Hien Vu Pham**](https://orcid.org/0009-0003-3392-7590)$^1$ · [**Tien Dat Le**](https://orcid.org/0009-0009-8063-4866)$^1$ · [**Minhuy Le**](https://orcid.org/0000-0001-6152-6215)$^{1,*}$  
+*$^1$ Intelligent Communication System Laboratory (ICSLab), Phenikaa School of Engineering, Phenikaa University, Hanoi, Vietnam*  
+$^*$*Corresponding author*: [huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn)
 
 ---
 
-## 👥 Authors & Affiliation
-
-**The Tuan Trinh**, **Hien Vu Pham**, **Tien Dat Le**, and **Minhuy Le**$^*$  
-*Intelligent Communication System Laboratory (ICSLab), Phenikaa School of Engineering, Phenikaa University, Hanoi, Vietnam*  
-$^*$*Corresponding Author*: [huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn) | [Website](https://icslab.phenikaa-uni.edu.vn/)
+### [📄 Paper (IEEE Xplore)](https://doi.org/10.1109/JSEN.2025.3573743) • [🎬 Video Demos](#-demonstration-videos) • [🦾 UR3 Control](#-gesture-vocabulary--robot-action-mapping) • [📊 Dataset](#-dataset-access) • [⚡ Quick Start](#-quick-start) • [📖 Citation](#-citation)
 
 ---
 
-## 📖 Abstract
+</div>
 
-Frequency-modulated continuous-wave (FMCW) radar is a promising sensor technology for hand gesture recognition in autonomous control systems due to its privacy preservation, robustness to ambient lighting conditions, and non-contact operation. While deep learning (DL) models have demonstrated significant success in classifying radar gesture signals, traditional deterministic DL models lack the ability to convey **predictive uncertainty**. In mission-critical and human-robot interaction (HRI) applications, knowing *when a model does not know* is paramount for safety.
+## 🌟 Overview & Key Highlights
 
-This work introduces an **uncertainty-aware deep convolutional neural network (CNN)** framework for FMCW radar-based gesture recognition. The framework incorporates:
-1. **Monte Carlo Dropout (MCD)** for sampling-based epistemic uncertainty quantification.
-2. **Deep Ensemble Learning (DEL)** for robust variance estimation across diverse model initializations.
-3. **Spectral-Normalized Neural Gaussian Process (SNGP)** for distance-aware uncertainty calibration.
+Frequency-modulated continuous-wave (FMCW) radar provides non-contact, privacy-preserving, and illumination-invariant sensing for human-machine interaction. While conventional deep learning (DL) models achieve high accuracy on benchmark radar datasets, they are typically **deterministic**—producing point estimates without conveying confidence reliability. In mission-critical robotics and autonomous systems, **uncalibrated predictions can cause catastrophic failures**.
 
-Evaluated on a comprehensive dataset of 10 distinct gestures collected from 10+ volunteers, the proposed model achieves **over 99% recognition accuracy** and demonstrates superior robustness against environmental clutter and additive noise compared to conventional deterministic architectures. Furthermore, the system is integrated into a real-time hardware-in-the-loop control pipeline for a **Universal Robots (UR3)** industrial robotic arm with safety-aware fail-safe gating.
+This repository provides the complete, end-to-end framework introduced in our paper:
+
+- 🎯 **High Precision**: Achieves **>99% recognition accuracy** across 10 dynamic gesture types from 10+ human subjects.
+- 🛡️ **Uncertainty Quantification**: Seamlessly integrates:
+  - **Monte Carlo Dropout (MCD)** for epistemic uncertainty estimation.
+  - **Deep Ensemble Learning (DEL)** for variance mitigation across distinct parameter basins.
+  - **Spectral-Normalized Neural Gaussian Process (SNGP)** for distance-aware, out-of-distribution (OOD) detection.
+- 🦾 **Closed-Loop Robot Manipulation**: Directly controls an industrial **Universal Robots (UR3)** arm with a real-time fail-safe mechanism: when predictive uncertainty exceeds a safety threshold, robot motion is automatically halted.
+- 📡 **Full Real-Time Hardware Pipeline**: Complete acquisition and signal processing workflow using TI 77 GHz mmWave radar ([AWR1243BOOST](https://www.ti.com/tool/AWR1243BOOST)) + [DCA1000EVM](https://www.ti.com/tool/DCA1000EVM) streaming over UDP to an interactive PyQt5 telemetry suite.
 
 ---
 
 ## 🎥 Demonstration Videos
 
-| Demonstration | Preview / Video Link | Description |
+| Application / Testbed | Video Preview | System Description |
 | :--- | :---: | :--- |
-| **Radar Hand Gesture Recognition System** | [![Demo Video](https://img.shields.io/badge/YouTube-Watch%20Demo-red?logo=youtube)](https://youtu.be/sJVkmNhxBvc) | Real-time radar data capture, range-Doppler processing, and gesture prediction with live uncertainty estimation. |
-| **UR3 Robotic Arm Real-World Control** | [![UR3 Video](https://img.shields.io/badge/YouTube-Watch%20UR3%20Demo-red?logo=youtube)](https://youtu.be/mBBL0jrHSRk) | Physical Universal Robots UR3 arm manipulation driven by real-time gesture commands via Ethernet interface. |
-| **URSim Digital Twin Simulation** | [![URSim Video](https://img.shields.io/badge/YouTube-Watch%20Simulation-red?logo=youtube)](https://youtube.com/shorts/XkRe66ik0ME?feature=share) | Hardware-in-the-loop validation using Universal Robots URSim software environment before physical deployment. |
+| **Real-time Radar HGR System** | [![Radar HGR Demo](https://img.shields.io/badge/YouTube-Watch%20System%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/sJVkmNhxBvc) | Real-time ADC data streaming, Range-Doppler heatmaps, live class probabilities, and epistemic uncertainty gauge. |
+| **Physical UR3 Robotic Control** | [![UR3 Physical Demo](https://img.shields.io/badge/YouTube-Watch%20UR3%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/mBBL0jrHSRk) | Non-contact gesture steering of physical UR3 manipulator with safety-interlocked Cartesian and gripper actuation. |
+| **URSim Simulation Testbed** | [![URSim Simulation](https://img.shields.io/badge/YouTube-Watch%20URSim%20Demo-red?style=for-the-badge&logo=youtube)](https://youtube.com/shorts/XkRe66ik0ME?feature=share) | Hardware-in-the-loop (HIL) digital twin validation via Universal Robots URSim simulator over TCP/IP sockets. |
 
 ---
 
-## 🛠️ System Architecture & Hardware Setup
+## 🤖 Gesture Vocabulary & Robot Action Mapping
+
+The system classifies 10 dynamic gesture modes. In autonomous robotic mode (`main_control.py`), recognized gestures are translated into deterministic Cartesian / tool poses:
+
+| # | Gesture Class | Motion Pattern | UR3 Robotic Execution | Safety / Interlock Policy |
+| :-: | :--- | :--- | :--- | :--- |
+| **0** | `Empty` | Background / idle environment | Standby | No motion |
+| **1** | `Counter-clockwise` | Circular arc (CCW) | Reserved trajectory | Safety verified |
+| **2** | `Clockwise` | Circular arc (CW) | Reserved trajectory | Safety verified |
+| **3** | `Push-down` | Downward hand thrust | **Lower TCP ($Z - 30\text{ mm}$)** | Auto-brake if uncertainty > threshold |
+| **4** | `Pull-up` | Upward hand lift | **Lift TCP ($Z + 30\text{ mm}$)** | Auto-brake if uncertainty > threshold |
+| **5** | `Zoom-out` | Expanding two-hand/palm spread | **Tool Release (Open Gripper)** | Auto-brake if uncertainty > threshold |
+| **6** | `Zoom-in` | Contracting palm squeeze | **Tool Clamp (Close Gripper)** | Auto-brake if uncertainty > threshold |
+| **7** | `To-left` | Lateral swipe to the left | **Translate TCP ($X + 30\text{ mm}$)** | Auto-brake if uncertainty > threshold |
+| **8** | `To-right` | Lateral swipe to the right | **Translate TCP ($X - 30\text{ mm}$)** | Auto-brake if uncertainty > threshold |
+| **9** | `Unknown` / OOD | Random clutter / unfamiliar motion | **Immediate Hold / Fail-Safe** | **Interlock triggered** |
+
+---
+
+## 🏛️ System Architecture
 
 ```
-   ┌──────────────────────┐         ┌─────────────────────────┐
-   │  Texas Instruments   │  Raw IQ │ Texas Instruments       │
-   │  AWR1243BOOST Radar  ├────────►│ DCA1000EVM Capture Card │
-   │  (77 GHz mmWave)     │ LVDS    │ (High-speed UDP Stream) │
-   └──────────────────────┘         └────────────┬────────────┘
-                                                 │ Ethernet
-                                                 ▼
-   ┌──────────────────────────────────────────────────────────┐
-   │ Real-time Processing & Uncertainty-Aware Engine (Host)   │
-   │  • Range-Doppler / Micro-Doppler FFT Preprocessing       │
-   │  • Deep CNN (Monte Carlo Dropout / DEL / SNGP)           │
-   │  • PyQt5 Dashboard: Confidence, Uncertainty & Telemetry  │
-   └──────────────────────────────┬───────────────────────────┘
-                                  │ Safety-gated commands
+   ┌────────────────────────┐         ┌─────────────────────────┐
+   │ Texas Instruments      │  Raw IQ │ Texas Instruments       │
+   │ AWR1243BOOST Radar     ├────────►│ DCA1000EVM Capture Card │
+   │ (77 GHz FMCW mmWave)   │  LVDS   │ (High-Speed UDP Stream) │
+   └────────────────────────┘         └────────────┬────────────┘
+                                                   │ Ethernet
+                                                   ▼
+   ┌────────────────────────────────────────────────────────────┐
+   │ Real-time Processing & Uncertainty Engine (Host Workstation)│
+   │  ├─ Digital Signal Processing: Range-Doppler / Micro-Doppler│
+   │  ├─ Uncertainty-Aware Deep CNN (MCD / DEL / SNGP)           │
+   │  ├─ Real-Time Telemetry Dashboard (PyQt5 & PyQtGraph)       │
+   │  └─ Dynamic Safety Gate: Uncertainty Evaluation & Filtering │
+   └──────────────────────────────┬─────────────────────────────┘
+                                  │ TCP/IP Socket (Port 30003)
                                   ▼
-   ┌──────────────────────────────────────────────────────────┐
-   │ Universal Robots UR3 Industrial Robotic Arm (or URSim)   │
-   │  • End-effector Cartesian & Joint-space Trajectory       │
-   │  • Automatic fail-safe hold when uncertainty is elevated │
-   └──────────────────────────────────────────────────────────┘
+   ┌────────────────────────────────────────────────────────────┐
+   │ Industrial Manipulator: Universal Robots UR3 / URSim        │
+   │  ├─ Real-time Tool Center Point (TCP) Position Translation │
+   │  ├─ Pneumatic / Electric Gripper Actuation (Clamp/Release)  │
+   │  └─ Instant Safety Hold whenever Uncertainty is Elevated   │
+   └────────────────────────────────────────────────────────────┘
 ```
-
-- **Radar Sensor**: Texas Instruments [AWR1243BOOST](https://www.ti.com/tool/AWR1243BOOST) mmWave sensor (76–81 GHz).
-- **Data Capture Card**: Texas Instruments [DCA1000EVM](https://www.ti.com/tool/DCA1000EVM) providing real-time raw ADC data streaming over UDP.
-- **Robotic Manipulator**: [Universal Robots UR3](https://www.universal-robots.com/products/ur3-robot/) 6-DOF robotic arm.
-- **Gesture Alphabet**: 10 hand gestures performed by 10+ participants under various angles and noise perturbations.
 
 ---
 
-## 📂 Repository Structure
+## 📁 Repository Layout
 
 ```text
 Hand-Gesture-Recognition/
-├── (2+1)D CVCNN/              # Git Submodule: Complex-Valued (2+1)D CVCNN architecture
-├── Uncertainty-Aware/
-│   ├── Datasets/              # Dataset metadata, specifications, and access information
-│   │   └── README.md
+├── (2+1)D CVCNN/                  # Git Submodule: Complex-Valued (2+1)D CVCNN model
+├── Uncertainty-Aware/             # Main publication codebase & real-time control system
+│   ├── Datasets/
+│   │   └── README.md              # Dataset specifications & acquisition protocols
 │   └── scripts/
-│       ├── main_control.py    # Main PyQt5 application: Radar DSP, inference & UR3 control
-│       ├── requirements.txt   # Python dependency specifications
-│       ├── LICENSE            # MIT License
-│       ├── models/            # Pretrained uncertainty-aware model checkpoints (.h5)
+│       ├── main_control.py        # Central PyQt5 application (Radar + Deep Learning + UR3)
+│       ├── requirements.txt       # Python package dependencies
+│       ├── LICENSE                # MIT License
+│       ├── models/                # Pretrained uncertainty-aware weights
 │       │   ├── model_1.h5
 │       │   └── model_2.h5
 │       └── src/
-│           ├── DSP/           # Radar signal processing & feature extraction routines
-│           ├── radar/         # mmWave sensor configuration & DCA1000 interface
-│           ├── UI/            # PyQt5 Graphical User Interface components
-│           ├── UR/            # Universal Robots TCP/IP socket client & motion commands
-│           ├── use_case/      # Prediction engines and robot control state machines
-│           ├── thread_fn/     # Multi-threaded acquisition and worker implementations
-│           └── utils/         # Plotting, metrics, and visualization utilities
-├── .gitmodules                # Git submodule configuration
-└── README.md
+│           ├── DSP/               # Range-Doppler & Micro-Doppler FFT transforms
+│           ├── radar/             # mmWave radar parameters & DCA1000 socket client
+│           ├── UI/                # Graphical user interface definitions & icons
+│           ├── UR/                # Universal Robots Ethernet client & motion driver
+│           ├── use_case/          # Inference pipeline & UR3 autonomous control logic
+│           ├── thread_fn/         # QThread workers for concurrent capture & inference
+│           └── utils/             # Visualization, confusion matrix & metrics tools
+├── .gitmodules                    # Submodule mapping
+└── README.md                      # Primary project documentation
 ```
 
-> **Submodule Note:** `(2+1)D CVCNN` is linked directly to [Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition](https://github.com/thetuantrinh/Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition).
+> 🔗 **Submodule Link:** `(2+1)D CVCNN` is directly linked to the companion repository [Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition](https://github.com/thetuantrinh/Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition).
 
 ---
 
-## 🚀 Getting Started
+## ⚡ Quick Start
 
-### 1. Clone the Repository (with Submodules)
+### 1. Clone with Submodules
 
-Clone the repository and recursively fetch all nested submodules:
+Clone this repository and recursively initialize all linked submodules:
 
 ```bash
 git clone --recurse-submodules https://github.com/thetuantrinh/Hand-Gesture-Recognition.git
 cd Hand-Gesture-Recognition
 ```
 
-If you have already cloned without `--recurse-submodules`, initialize the submodule using:
-
-```bash
-git submodule update --init --recursive
-```
+*(If cloned previously without `--recurse-submodules`, run `git submodule update --init --recursive`)*.
 
 ### 2. Environment Setup
 
-It is recommended to use Python 3.8–3.10 and create a virtual environment:
+We recommend Python 3.8–3.10 with a clean conda or virtual environment:
 
 ```bash
-# Using conda
+# Create and activate conda environment
 conda create -n radar_hgr python=3.9 -y
 conda activate radar_hgr
 
-# Or using venv
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-Install the required packages:
-
-```bash
+# Install dependencies
 cd Uncertainty-Aware/scripts
 pip install -r requirements.txt
 ```
 
-### 4. Running the Real-Time Application
+### 3. Run Real-Time Controller & GUI
 
-Launch the real-time GUI application for radar gesture prediction and robot control:
+Ensure your host machine is connected to:
+- The **DCA1000EVM** card via Ethernet (Default IP: `192.168.33.30`).
+- The **UR3 Controller** or **URSim** host (via TCP/IP).
+
+Launch the application:
 
 ```bash
 python3 main_control.py
 ```
 
-The GUI allows you to:
-- Connect to the DCA1000EVM / AWR1243BOOST radar over Ethernet/USB.
-- Connect to the Universal Robots UR3 controller (or local URSim IP).
-- Visualize real-time radar Range-Doppler heatmaps and gesture classification probability distributions.
-- Monitor predictive uncertainty in real time with safety interlocks.
+Inside the GUI:
+1. Initialize the radar stream to view live range-Doppler feature maps.
+2. Select an uncertainty-aware checkpoint from `models/` (e.g., `model_1.h5`).
+3. Connect to UR3 or URSim to enable real-time gesture-driven manipulator control.
 
 ---
 
 ## 📊 Dataset Access
 
-The dataset contains raw radar ADC data and processed feature cubes corresponding to **10 gesture types** collected from **10+ volunteers** under clean and noise-corrupted environments (`hand_gesture_recognition_dataset.mat` and `hand_gesture_recognition_corrupted_dataset.mat`).
+The dataset consists of raw radar time-domain ADC data and processed Doppler-range feature cubes collected from **10+ volunteers** under clean and controlled noise scenarios:
+- `hand_gesture_recognition_dataset.mat`
+- `hand_gesture_recognition_corrupted_dataset.mat` (with varying SNR levels)
 
-* Due to storage size considerations, full raw datasets are available upon request.
-* Please contact **Dr. Minhuy Le** at [huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn) or refer to [Uncertainty-Aware/Datasets/README.md](Uncertainty-Aware/Datasets/README.md) for details.
+> [!NOTE]  
+> Due to hosting size constraints, the full datasets are hosted on dedicated institutional servers and available upon academic request.  
+> Please contact **Dr. Minhuy Le** ([huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn)) or refer to [Uncertainty-Aware/Datasets/README.md](Uncertainty-Aware/Datasets/README.md).
 
 ---
 
-## 📝 Citation
+## 📖 Citation
 
-If you find this work, codebase, or dataset useful in your research, please cite our IEEE paper:
+If this paper, codebase, pre-trained models, or dataset contribute to your research, please cite our publication:
 
 ```bibtex
 @article{trinh2025hand,
@@ -191,12 +212,12 @@ If you find this work, codebase, or dataset useful in your research, please cite
 
 ---
 
-## 📜 License
+## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](Uncertainty-Aware/scripts/LICENSE) file for details.
+This project is licensed under the **MIT License** — see the [LICENSE](Uncertainty-Aware/scripts/LICENSE) file for complete details.
 
 ---
 
-## 🙏 Acknowledgements
+## 🏛️ Acknowledgements
 
-This research was conducted at the **Intelligent Communication System Laboratory (ICSLab)**, Phenikaa School of Engineering, Phenikaa University, Hanoi, Vietnam.
+This research was conducted at the **Intelligent Communication System Laboratory (ICSLab)**, Phenikaa School of Engineering, Phenikaa University, Hanoi, Vietnam. We thank all study volunteers who contributed to the radar gesture dataset.
