@@ -1,0 +1,3 @@
+[submodule "(2+1)D CVCNN"]
+	path = (2+1)D CVCNN
+	url = https://github.com/thetuantrinh/Complex-Valued-FMCW-Radar-Hand-Gesture-Recognition.git
