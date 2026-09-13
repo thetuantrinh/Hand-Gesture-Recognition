@@ -18,7 +18,7 @@
 *"Hand Gesture Recognition With Uncertainty Awareness via FMCW Radar Sensing and Deep Learning"*  
 Published in **IEEE Sensors Journal**, Vol. 25, No. 13, pp. 24517–24524, 2025.
 
-[**The Tuan Trinh**](https://github.com/thetuantrinh)$^1$ · [**Hien Vu Pham**](https://orcid.org/0009-0003-3392-7590)$^1$ · [**Tien Dat Le**](https://orcid.org/0009-0009-8063-4866)$^1$ · [**Minhuy Le**](https://orcid.org/0000-0001-6152-6215)$^{1,*}$  
+[**The Tuan Trinh**](https://github.com/thetuantrinh)$^1$ · [**Hien Vu Pham**](https://orcid.org/0009-0003-3392-7590)$^1$ · [**Tien Dat Le**](https://orcid.org/0009-0009-8063-4866)$^1$ · [**Minhuy Le**](https://orcid.org/0000-0001-6152-6215)$^1$$^,$$^*$
 *$^1$ Intelligent Communication System Laboratory (ICSLab), Phenikaa School of Engineering, Phenikaa University, Hanoi, Vietnam*  
 $^*$*Corresponding author*: [huy.leminh@phenikaa-uni.edu.vn](mailto:huy.leminh@phenikaa-uni.edu.vn)
 
